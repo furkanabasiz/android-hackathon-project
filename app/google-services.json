@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "936418899495",
+    "project_id": "smile-hair-clinic-hackathon",
+    "storage_bucket": "smile-hair-clinic-hackathon.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:936418899495:android:9eb812728dcf664ff54002",
+        "android_client_info": {
+          "package_name": "com.hackathon.smilehairclinic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "936418899495-d3sjcsl8m93ufvulbhev8a9980c26v88.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApZJvlmm8XJaDQbMzWNpL1F2QwOWg4Oaw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "936418899495-d3sjcsl8m93ufvulbhev8a9980c26v88.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

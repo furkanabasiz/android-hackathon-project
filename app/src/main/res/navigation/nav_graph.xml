@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/registerFragment">
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.hackathon.smilehairclinic.ui.auth.RegisterFragment"
+        android:label="RegisterFragment" >
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_registerFragment_to_loginConsultantActivity2"
+            app:destination="@id/loginConsultantActivity" />
+        <action
+            android:id="@+id/action_registerFragment_to_customerDashboardFragment"
+            app:destination="@id/customerDashboardFragment" />
+    </fragment>
+    <activity
+        android:id="@+id/loginConsultantActivity"
+        android:name="com.hackathon.smilehairclinic.ui.auth.LoginConsultantFragment"
+        android:label="activity_login_consultant"
+        tools:layout="@layout/fragment_login_consultant" />
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.hackathon.smilehairclinic.ui.auth.LoginFragment"
+        android:label="LoginFragment" >
+        <action
+            android:id="@+id/action_loginFragment_to_customerDashboardFragment"
+            app:destination="@id/customerDashboardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/customerDashboardFragment"
+        android:name="com.hackathon.smilehairclinic.ui.customer.CustomerDashboardFragment"
+        android:label="fragment_customer_dashboard"
+        tools:layout="@layout/fragment_customer_dashboard" >
+        <action
+            android:id="@+id/action_customerDashboardFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+</navigation>
