@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="300dp"
+    android:viewportWidth="300"
+    android:viewportHeight="300">
+
+    <!-- Tepe bölgesi dairesi -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:strokeAlpha="0.5"
+        android:fillColor="#00000000"
+        android:pathData="M150,150 m-100,0 a100,100 0 1,1 200,0 a100,100 0 1,1 -200,0" />
+
+    <!-- İç hedef dairesi -->
+    <path
+        android:strokeColor="#FFFF00"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.7"
+        android:fillColor="#00000000"
+        android:pathData="M150,150 m-50,0 a50,50 0 1,1 100,0 a50,50 0 1,1 -100,0" />
+
+    <!-- Merkez noktası -->
+    <path
+        android:fillColor="#FF0000"
+        android:fillAlpha="0.5"
+        android:pathData="M150,150 m-5,0 a5,5 0 1,1 10,0 a5,5 0 1,1 -10,0" />
+</vector>

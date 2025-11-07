@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="300dp"
+    android:viewportWidth="300"
+    android:viewportHeight="300">
+
+    <!-- Arka kafa oval çerçevesi -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:strokeAlpha="0.5"
+        android:fillColor="#00000000"
+        android:pathData="M150,80 C190,80 220,110 220,150 C220,190 190,220 150,220 C110,220 80,190 80,150 C80,110 110,80 150,80 Z" />
+
+    <!-- Donör bölgesi işaretlemesi -->
+    <path
+        android:strokeColor="#00FF00"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.7"
+        android:fillColor="#00000000"
+        android:pathData="M100,160 Q150,180 200,160 L200,190 Q150,210 100,190 Z"
+        />
+
+<!-- Ok işareti -->
+    <path
+        android:strokeColor="#FFFF00"
+        android:strokeWidth="2"
+        android:fillColor="#FFFF00"
+        android:fillAlpha="0.3"
+        android:pathData="M150,100 L140,110 L145,110 L145,120 L155,120 L155,110 L160,110 Z" />
+</vector>

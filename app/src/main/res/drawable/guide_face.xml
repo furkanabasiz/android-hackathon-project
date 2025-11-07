@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="300dp"
+    android:viewportWidth="300"
+    android:viewportHeight="300">
+
+    <!-- Yüz oval çerçevesi -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.5"
+        android:pathData="M150,50 C200,50 240,100 240,150 C240,200 200,250 150,250 C100,250 60,200 60,150 C60,100 100,50 150,50 Z" />
+
+    <!-- Göz yerleri -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1"
+        android:strokeAlpha="0.3"
+        android:pathData="M110,130 L130,130 M170,130 L190,130" />
+
+    <!-- Burun yeri -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1"
+        android:strokeAlpha="0.3"
+        android:pathData="M150,140 L150,170" />
+
+    <!-- Ağız yeri -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1"
+        android:strokeAlpha="0.3"
+        android:pathData="M120,190 Q150,200 180,190" />
+</vector>
