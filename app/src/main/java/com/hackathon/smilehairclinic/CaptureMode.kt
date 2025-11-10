@@ -6,7 +6,7 @@ data class CaptureMode(
     val instruction: String,
     val targetPitch: Float,
     val targetRoll: Float,
-    val toleranceDegrees: Float = 10f,
+    val toleranceDegrees: Float = 15f,
     val requiresFaceDetection: Boolean,
     val faceAngle: Float? = null,
     val useFrontCamera: Boolean
@@ -17,8 +17,9 @@ object CaptureModes {
         id = 1,
         title = "Tam Yüz",
         instruction = "Telefonu yüzünüze paralel tutun ve düz bakın",
-        targetPitch = 0f,
+        targetPitch = 90f,
         targetRoll = 0f,
+        toleranceDegrees = 15f,
         requiresFaceDetection = true,
         faceAngle = 0f,
         useFrontCamera = true
@@ -28,8 +29,9 @@ object CaptureModes {
         id = 2,
         title = "45° Sağ",
         instruction = "Yüzünüzü 45 derece sağa çevirin",
-        targetPitch = 0f,
+        targetPitch = 90f,
         targetRoll = 0f,
+        toleranceDegrees = 15f,
         requiresFaceDetection = true,
         faceAngle = 45f,
         useFrontCamera = true
@@ -39,8 +41,9 @@ object CaptureModes {
         id = 3,
         title = "45° Sol",
         instruction = "Yüzünüzü 45 derece sola çevirin",
-        targetPitch = 0f,
+        targetPitch = 90f,
         targetRoll = 0f,
+        toleranceDegrees = 15f,
         requiresFaceDetection = true,
         faceAngle = -45f,
         useFrontCamera = true
@@ -50,24 +53,24 @@ object CaptureModes {
         id = 4,
         title = "Tepe Bölgesi",
         instruction = "Telefonu başınızın üstüne doğru tutun",
-        targetPitch = 90f,
+        targetPitch = 135f,
         targetRoll = 0f,
         toleranceDegrees = 15f,
         requiresFaceDetection = false,
         faceAngle = null,
-        useFrontCamera = false
+        useFrontCamera = true
     )
 
     val BACK_DONOR = CaptureMode(
         id = 5,
         title = "Arka Donör Bölgesi",
         instruction = "Telefonu başınızın arkasına doğru tutun",
-        targetPitch = 45f,
+        targetPitch = 180f,
         targetRoll = 0f,
         toleranceDegrees = 15f,
         requiresFaceDetection = false,
         faceAngle = null,
-        useFrontCamera = false
+        useFrontCamera = true
     )
 
     fun getAllModes(): List<CaptureMode> = listOf(

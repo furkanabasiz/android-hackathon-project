@@ -1,4 +1,4 @@
-package com.hackathon.smilehairclinic.ui.camera
+package com.hackathon.smilehairclinic
 
 import android.Manifest
 import android.content.Context
@@ -45,7 +45,6 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var vibrator: Vibrator
     private lateinit var toneGenerator: ToneGenerator
     private lateinit var firebaseUploadManager: FirebaseUploadManager
-
     private var imageCapture: ImageCapture? = null
     private var camera: Camera? = null
     private var cameraProvider: ProcessCameraProvider? = null
@@ -284,16 +283,18 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
             faceCorrect = detectedFace != null && checkFaceAngle(currentMode.faceAngle)
         }
 
-        isPositionCorrect = pitchCorrect && rollCorrect && faceCorrect
+        isPositionCorrect = pitchCorrect && faceCorrect // &rollCorrect
 
         // Geri bildirim güncelle
         updateFeedback(when {
-            !pitchCorrect -> "Telefonu ${if (currentPitch < currentMode.targetPitch) "yukarı" else "aşağı"} kaldırın"
+            !pitchCorrect -> "Telefonu ${if (currentPitch < currentMode.targetPitch) "yukarı kaldırın" else "aşağı indirin"}"
             !rollCorrect -> "Telefonu ${if (currentRoll < currentMode.targetRoll) "sağa" else "sola"} çevirin"
             !faceCorrect && currentMode.requiresFaceDetection ->
                 if (detectedFace == null) "Yüzünüzü gösterin" else "Yüzünüzü ${currentMode.title} pozisyonuna getirin"
             else -> "Mükemmel! Sabit tutun..."
         })
+
+
 
         // Ses geri bildirimi
         if (isPositionCorrect) {
@@ -302,13 +303,14 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
             if (!isCapturing && countDownTimer == null) {
                 startAutoCapture()
             }
-        } else {
-            playLowBeep()
-            // Yanlış pozisyonda timer varsa iptal et
-            countDownTimer?.cancel()
-            countDownTimer = null
-            binding.countdownContainer.visibility = View.GONE
         }
+//            else {
+//            playLowBeep()
+//            // Yanlış pozisyonda timer varsa iptal et
+//            countDownTimer?.cancel()
+//            countDownTimer = null
+//            binding.countdownContainer.visibility = View.GONE
+//            }
     }
 
     private fun checkFaceAngle(targetAngle: Float?): Boolean {

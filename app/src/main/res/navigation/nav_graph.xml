@@ -13,17 +13,12 @@
             android:id="@+id/action_registerFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
         <action
-            android:id="@+id/action_registerFragment_to_loginConsultantActivity2"
-            app:destination="@id/loginConsultantActivity" />
-        <action
             android:id="@+id/action_registerFragment_to_customerDashboardFragment"
             app:destination="@id/customerDashboardFragment" />
+        <action
+            android:id="@+id/action_registerFragment_to_loginConsultantFragment"
+            app:destination="@id/loginConsultantFragment" />
     </fragment>
-    <activity
-        android:id="@+id/loginConsultantActivity"
-        android:name="com.hackathon.smilehairclinic.ui.auth.LoginConsultantFragment"
-        android:label="activity_login_consultant"
-        tools:layout="@layout/fragment_login_consultant" />
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.hackathon.smilehairclinic.ui.auth.LoginFragment"
@@ -40,5 +35,46 @@
         <action
             android:id="@+id/action_customerDashboardFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_customerDashboardFragment_to_cameraCaptureActivity"
+            app:destination="@id/cameraCaptureActivity" />
+        <action
+            android:id="@+id/action_customerDashboardFragment_to_placeholder2"
+            app:destination="@id/placeholder2" />
+    </fragment>
+    <fragment
+        android:id="@+id/consultantDashboardFragment"
+        android:name="com.hackathon.smilehairclinic.ui.consultant.ConsultantDashboardFragment"
+        android:label="fragment_consultant_dashboard"
+        tools:layout="@layout/fragment_consultant_dashboard" >
+        <action
+            android:id="@+id/action_consultantDashboardFragment_to_loginConsultantFragment"
+            app:destination="@id/loginConsultantFragment" />
+        <action
+            android:id="@+id/action_consultantDashboardFragment_to_placeholder"
+            app:destination="@id/placeholder" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginConsultantFragment"
+        android:name="com.hackathon.smilehairclinic.ui.auth.LoginConsultantFragment"
+        android:label="fragment_login_consultant"
+        tools:layout="@layout/fragment_login_consultant" >
+        <action
+            android:id="@+id/action_loginConsultantFragment_to_consultantDashboardFragment"
+            app:destination="@id/consultantDashboardFragment" />
+    </fragment>
+    <activity
+        android:id="@+id/cameraCaptureActivity"
+        android:name="com.hackathon.smilehairclinic.CameraCaptureActivity"
+        android:label="CameraCaptureActivity" />
+    <fragment android:id="@+id/placeholder" >
+        <action
+            android:id="@+id/action_placeholder_to_consultantDashboardFragment"
+            app:destination="@id/consultantDashboardFragment" />
+    </fragment>
+    <fragment android:id="@+id/placeholder2" >
+        <action
+            android:id="@+id/action_placeholder2_to_customerDashboardFragment"
+            app:destination="@id/customerDashboardFragment" />
     </fragment>
 </navigation>
