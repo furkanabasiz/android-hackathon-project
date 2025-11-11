@@ -121,7 +121,7 @@
 
     <!-- KVKK Onayı -->
     <CheckBox
-        android:id="@+id/checkBox"
+        android:id="@+id/kvkkCheckBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="KVKK ve Hizmet Sözleşmesi kurallarını kabul ediyorum"
@@ -138,34 +138,13 @@
         android:text="Kayıt Ol"
         android:textColor="@color/white"
         android:backgroundTint="@color/secondary"
-        app:layout_constraintTop_toBottomOf="@id/checkBox"
+        app:layout_constraintTop_toBottomOf="@id/kvkkCheckBox"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
         android:padding="12dp"/>
 
     <!-- Alt Metin -->
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Danışman mısınız?  "
-        app:layout_constraintEnd_toStartOf="@+id/textView2"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/registerButton" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Oturum Aç"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/textView3"
-        app:layout_constraintTop_toTopOf="@id/textView3" />
 
     <ImageView
         android:id="@+id/imageView4"

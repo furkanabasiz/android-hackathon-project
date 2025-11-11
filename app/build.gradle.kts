@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
+    alias(libs.plugins.kotlinx.serialization)
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -80,7 +82,7 @@ dependencies {
     implementation("com.google.mlkit:face-detection:16.1.5")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
