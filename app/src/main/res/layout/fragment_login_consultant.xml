@@ -1,44 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
-    tools:context=".ui.auth.LoginConsultantFragment">
+    android:orientation="vertical"
+    android:background="@color/secondary"
+    tools:context=".ui.auth.LoginFragment">
 
-    <!-- Başlık -->
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hoşgeldiniz"
-        android:textSize="34sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:padding="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
 
-    <!-- Alt başlık -->
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Devam etmek için lütfen giriş yapınız"
-        app:layout_constraintStart_toStartOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Hoşgeldiniz"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:fontFamily="@font/poppins"
+            android:textSize="14sp"
+            android:text="Devam etmek için lütfen giriş yapınız"
+            app:layout_constraintStart_toStartOf="@+id/textView"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_white_rounded_top"
+        android:padding="15dp">
+
+
 
     <!-- Görsel -->
     <ImageView
         android:id="@+id/imageView"
+        android:src="@drawable/login_img"
         android:layout_width="221dp"
         android:layout_height="245dp"
         android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <!-- Kullanıcı Kodu Alanı -->
     <com.google.android.material.textfield.TextInputLayout
@@ -106,3 +132,4 @@
         app:layout_constraintEnd_toEndOf="@+id/passwordLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

@@ -13,7 +13,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:padding="15dp"
+        android:padding="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
         android:orientation="vertical"
         android:gravity="center_vertical">
 
@@ -22,9 +24,10 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
+            android:fontFamily="@font/poppins_semibold"
             android:text="Hoşgeldiniz"
-            android:textSize="34sp"
+            android:textColor="@color/white"
+            android:textSize="30sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,6 +36,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
+            android:fontFamily="@font/poppins"
+            android:textSize="14sp"
             android:text="Devam etmek için lütfen giriş yapınız"
             app:layout_constraintStart_toStartOf="@+id/textView"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -62,24 +67,25 @@
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="128dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginBottom="12dp"
             android:text="Henüz hesabın yok mu?"
             android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/registerFragmentButton"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="@+id/registerFragmentButton"
-            app:layout_constraintTop_toBottomOf="@+id/loginButton" />
+            app:layout_constraintStart_toStartOf="@+id/registerFragmentButton" />
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="221dp"
             android:layout_height="245dp"
             android:layout_marginTop="24dp"
+            android:src="@drawable/login_img"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@tools:sample/avatars" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- ✅ E-Posta Alanı -->
         <com.google.android.material.textfield.TextInputLayout
@@ -94,6 +100,7 @@
             app:boxCornerRadiusTopEnd="16dp"
             app:boxCornerRadiusTopStart="16dp"
             app:boxStrokeColor="#BDBDBD"
+            android:alpha="0.7"
             app:boxStrokeWidth="1dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -119,6 +126,7 @@
             app:boxCornerRadiusTopEnd="16dp"
             app:boxCornerRadiusTopStart="16dp"
             app:boxStrokeColor="#BDBDBD"
+            android:alpha="0.7"
             app:boxStrokeWidth="1dp"
             app:endIconMode="password_toggle"
             app:layout_constraintEnd_toEndOf="@+id/emailLayout"
@@ -150,15 +158,15 @@
             android:id="@+id/registerFragmentButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginBottom="24dp"
             android:backgroundTint="@color/secondary"
             android:text="Kayıt Ol"
             android:textSize="16sp"
             app:cornerRadius="13dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/consultantLoginButton"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/consultantLoginButton"

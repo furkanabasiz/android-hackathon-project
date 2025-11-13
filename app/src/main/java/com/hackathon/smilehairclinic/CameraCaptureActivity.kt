@@ -2,6 +2,7 @@ package com.hackathon.smilehairclinic
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -13,15 +14,18 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.text.Layout
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
@@ -30,7 +34,7 @@ import com.hackathon.smilehairclinic.R
 import com.hackathon.smilehairclinic.databinding.ActivityCameraCaptureBinding
 import com.hackathon.smilehairclinic.model.CaptureMode
 import com.hackathon.smilehairclinic.model.CaptureModes
-import com.hackathon.smilehairclinic.utils.FirebaseUploadManager
+import com.hackathon.smilehairclinic.FirebaseUploadManager
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ExecutorService
@@ -304,13 +308,9 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
                 startAutoCapture()
             }
         }
-//            else {
-//            playLowBeep()
-//            // Yanlış pozisyonda timer varsa iptal et
-//            countDownTimer?.cancel()
-//            countDownTimer = null
-//            binding.countdownContainer.visibility = View.GONE
-//            }
+            else {
+            playLowBeep()
+            }
     }
 
     private fun checkFaceAngle(targetAngle: Float?): Boolean {
@@ -499,39 +499,63 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         uploadPhotosToFirebase()
     }
 
+    // CameraCaptureActivity.kt içinde uploadPhotosToFirebase fonksiyonunu güncelle:
+
     private fun uploadPhotosToFirebase() {
+        // Auth kontrolü
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            Toast.makeText(this, "Lütfen önce giriş yapın!", Toast.LENGTH_LONG).show()
+            // Login sayfasına yönlendir
+            finish()
+            return
+        }
+
         lifecycleScope.launch {
             try {
                 showProgressDialog("Fotoğraflar yükleniyor...")
 
-                val userId = firebaseUploadManager.getCurrentUserId()
-                val sessionId = System.currentTimeMillis().toString()
-
+                val photosMap = mutableMapOf<Int, File>()
                 capturedPhotos.forEach { (mode, file) ->
-                    firebaseUploadManager.uploadPhoto(
-                        userId = userId,
-                        sessionId = sessionId,
-                        modeId = mode.id,
-                        modeName = mode.title,
-                        photoFile = file
-                    )
+                    photosMap[mode.id] = file
                 }
+
+                var uploadedCount = 0
+                firebaseUploadManager.uploadAllPhotos(
+                    photos = photosMap,
+                    onProgress = { current, total ->
+                        runOnUiThread {
+                            progressDialog?.setMessage("Yükleniyor... ($current/$total)")
+                        }
+                    }
+                )
 
                 hideProgressDialog()
 
-                Toast.makeText(this@CameraCaptureActivity,
+                Toast.makeText(
+                    this@CameraCaptureActivity,
                     "Tüm fotoğraflar başarıyla yüklendi!",
-                    Toast.LENGTH_LONG).show()
+                    Toast.LENGTH_LONG
+                ).show()
 
-                // Ana sayfaya dön veya sonuç sayfasına git
+                // Dashboard'a geri dön
+                val resultIntent = Intent()
+                resultIntent.putExtra("upload_success", true)
+                setResult(RESULT_OK, resultIntent)
                 finish()
 
             } catch (e: Exception) {
                 hideProgressDialog()
-                Log.e(TAG, "Upload failed", e)
-                Toast.makeText(this@CameraCaptureActivity,
-                    "Yükleme başarısız: ${e.message}",
-                    Toast.LENGTH_LONG).show()
+
+                AlertDialog.Builder(this@CameraCaptureActivity)
+                    .setTitle("Yükleme Hatası")
+                    .setMessage("Fotoğraflar yüklenemedi: ${e.message}")
+                    .setPositiveButton("Tekrar Dene") { _, _ ->
+                        uploadPhotosToFirebase()
+                    }
+                    .setNegativeButton("İptal") { _, _ ->
+                        finish()
+                    }
+                    .show()
             }
         }
     }
@@ -567,6 +591,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
             }
         }
     }
+
 
     override fun onDestroy() {
         super.onDestroy()

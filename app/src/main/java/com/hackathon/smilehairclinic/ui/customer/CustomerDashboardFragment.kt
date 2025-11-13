@@ -36,8 +36,9 @@ class CustomerDashboardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.textView6.setOnClickListener { logout(it) }
+        binding.cameraButton.setOnClickListener { findNavController().navigate(
+            CustomerDashboardFragmentDirections.actionCustomerDashboardFragmentToCameraCaptureActivity()) }
     }
 
     fun logout(view: View){
