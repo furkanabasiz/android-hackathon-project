@@ -28,8 +28,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SmileHairClinic">
         <activity
-            android:name=".CameraCaptureActivity"
-            android:exported="true">
+            android:name=".ui.customer.CameraCaptureActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
 
         </activity>
         <activity

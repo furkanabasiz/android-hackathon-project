@@ -12,6 +12,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.hackathon.smilehairclinic.databinding.FragmentRegisterBinding
 
 class RegisterFragment : Fragment() {
@@ -19,12 +20,14 @@ class RegisterFragment : Fragment() {
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
     private lateinit var auth: FirebaseAuth
+    private lateinit var firestore: FirebaseFirestore
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         auth = Firebase.auth
+        firestore = FirebaseFirestore.getInstance()
     }
 
     override fun onCreateView(
@@ -47,6 +50,8 @@ class RegisterFragment : Fragment() {
 
     fun register(view: View) {
 
+        val name = binding.editTextName.text.toString()
+        val phone = binding.editTextPhone.text.toString()
         val email = binding.editTextEmail.text.toString()
         val password = binding.editTextPassword.text.toString()
         val checkbox = binding.kvkkCheckBox.isChecked
@@ -56,6 +61,14 @@ class RegisterFragment : Fragment() {
                 if (task.isSuccessful) {
                     // user created
                     val user = auth.currentUser
+                    user?.let {
+                        val userMap = hashMapOf(
+                            "name" to name,
+                            "phone" to phone,
+                            "email" to email
+                        )
+                        firestore.collection("users").document(it.uid).set(userMap)
+                    }
                     updateUI(user)
                 }
             }.addOnFailureListener { exception ->

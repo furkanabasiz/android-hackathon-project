@@ -51,8 +51,8 @@
             android:id="@+id/action_consultantDashboardFragment_to_loginConsultantFragment"
             app:destination="@id/loginConsultantFragment" />
         <action
-            android:id="@+id/action_consultantDashboardFragment_to_placeholder"
-            app:destination="@id/placeholder" />
+            android:id="@+id/action_consultantDashboardFragment_to_examineSubmissionFragment"
+            app:destination="@id/examineSubmissionFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginConsultantFragment"
@@ -68,16 +68,20 @@
     </fragment>
     <activity
         android:id="@+id/cameraCaptureActivity"
-        android:name="com.hackathon.smilehairclinic.CameraCaptureActivity"
+        android:name="com.hackathon.smilehairclinic.ui.customer.CameraCaptureActivity"
         android:label="CameraCaptureActivity" />
-    <fragment android:id="@+id/placeholder" >
-        <action
-            android:id="@+id/action_placeholder_to_consultantDashboardFragment"
-            app:destination="@id/consultantDashboardFragment" />
-    </fragment>
     <fragment android:id="@+id/placeholder2" >
         <action
             android:id="@+id/action_placeholder2_to_customerDashboardFragment"
             app:destination="@id/customerDashboardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/examineSubmissionFragment"
+        android:name="com.hackathon.smilehairclinic.ui.consultant.ExamineSubmissionFragment"
+        android:label="fragment_examine_submission"
+        tools:layout="@layout/fragment_examine_submission" >
+        <action
+            android:id="@+id/action_examineSubmissionFragment_to_consultantDashboardFragment"
+            app:destination="@id/consultantDashboardFragment" />
     </fragment>
 </navigation>

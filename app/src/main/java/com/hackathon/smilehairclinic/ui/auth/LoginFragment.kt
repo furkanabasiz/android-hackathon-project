@@ -64,19 +64,6 @@ class LoginFragment : Fragment() {
         } else {
             Toast.makeText(requireContext(), "Lütfen E-posta ve Şifre Giriniz", Toast.LENGTH_LONG).show()
         }
-
-
-
-
-//        else {
-//            // If sign in fails, display a message to the user.
-//            Toast.makeText(
-//                requireContext(),
-//                "Login failed.",
-//                Toast.LENGTH_LONG,
-//            ).show()
-//            updateUI(null)
-//        }
     }
 
     fun updateUI(user: FirebaseUser?) {

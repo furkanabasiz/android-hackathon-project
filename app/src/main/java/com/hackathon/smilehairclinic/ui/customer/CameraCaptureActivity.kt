@@ -1,7 +1,7 @@
-package com.hackathon.smilehairclinic
+package com.hackathon.smilehairclinic.ui.customer
 
 import android.Manifest
-import android.content.Context
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.Sensor
@@ -10,17 +10,24 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.media.AudioManager
 import android.media.ToneGenerator
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.text.Layout
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.*
+import androidx.camera.core.Camera
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalGetImage
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -30,11 +37,12 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
+import com.hackathon.smilehairclinic.FirebaseUploadManager
 import com.hackathon.smilehairclinic.R
 import com.hackathon.smilehairclinic.databinding.ActivityCameraCaptureBinding
 import com.hackathon.smilehairclinic.model.CaptureMode
 import com.hackathon.smilehairclinic.model.CaptureModes
-import com.hackathon.smilehairclinic.FirebaseUploadManager
+import com.hackathon.smilehairclinic.utils.NetworkUtils
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ExecutorService
@@ -74,6 +82,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
     private var currentModeIndex = 0
     private val capturedPhotos = mutableMapOf<CaptureMode, File>()
     private var isCapturing = false
+    private var isFinished = false
     private var countDownTimer: CountDownTimer? = null
 
     // Pozisyon kontrol değişkenleri
@@ -93,6 +102,11 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         binding = ActivityCameraCaptureBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        if (!NetworkUtils.isNetworkAvailable(this)) {
+            showNoInternetDialog()
+            return
+        }
+
         initializeComponents()
 
         if (allPermissionsGranted()) {
@@ -107,10 +121,19 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         updateUI()
     }
 
+    private fun showNoInternetDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("İnternet Bağlantısı Yok")
+            .setMessage("Fotoğraf yüklemek için internet bağlantısı gereklidir.")
+            .setPositiveButton("Tamam") { _, _ -> finish() }
+            .setCancelable(false)
+            .show()
+    }
+
     private fun initializeComponents() {
         cameraExecutor = Executors.newSingleThreadExecutor()
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+        vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
         toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
         firebaseUploadManager = FirebaseUploadManager()
 
@@ -136,7 +159,10 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         }
     }
 
-    private fun getCurrentMode(): CaptureMode {
+    private fun getCurrentMode(): CaptureMode? {
+        if (currentModeIndex >= CaptureModes.getAllModes().size) {
+            return null
+        }
         return CaptureModes.getAllModes()[currentModeIndex]
     }
 
@@ -152,7 +178,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
     private fun bindCameraUseCases() {
         val cameraProvider = cameraProvider ?: return
 
-        val currentMode = getCurrentMode()
+        val currentMode = getCurrentMode() ?: return
 
         // Preview
         val preview = Preview.Builder().build().also {
@@ -174,6 +200,8 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
                         processImageForFaceDetection(imageProxy)
                     }
                 }
+        } else {
+            imageAnalyzer = null
         }
 
         // Camera selector
@@ -202,13 +230,13 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
     }
 
     private fun processImageForFaceDetection(imageProxy: ImageProxy) {
-        val currentMode = getCurrentMode()
+        val currentMode = getCurrentMode() ?: return
         if (!currentMode.requiresFaceDetection) {
             imageProxy.close()
             return
         }
 
-        @androidx.camera.core.ExperimentalGetImage
+        @ExperimentalGetImage
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
             val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
@@ -233,7 +261,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-        if (event == null) return
+        if (event == null || isFinished) return
 
         when (event.sensor.type) {
             Sensor.TYPE_ACCELEROMETER -> {
@@ -256,10 +284,10 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
     }
 
     private fun updateAngleDisplay() {
+        val currentMode = getCurrentMode() ?: return
+
         binding.tvPitchAngle.text = "${currentPitch.toInt()}°"
         binding.tvRollAngle.text = "${currentRoll.toInt()}°"
-
-        val currentMode = getCurrentMode()
 
         // Pitch kontrolü
         val pitchCorrect = abs(currentPitch - currentMode.targetPitch) <= currentMode.toleranceDegrees
@@ -275,7 +303,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
     }
 
     private fun checkPositionAndAutoCapture() {
-        val currentMode = getCurrentMode()
+        val currentMode = getCurrentMode() ?: return
 
         // Telefon açısı kontrolü
         val pitchCorrect = abs(currentPitch - currentMode.targetPitch) <= currentMode.toleranceDegrees
@@ -292,25 +320,21 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         // Geri bildirim güncelle
         updateFeedback(when {
             !pitchCorrect -> "Telefonu ${if (currentPitch < currentMode.targetPitch) "yukarı kaldırın" else "aşağı indirin"}"
-            !rollCorrect -> "Telefonu ${if (currentRoll < currentMode.targetRoll) "sağa" else "sola"} çevirin"
+            //!rollCorrect -> "Telefonu ${if (currentRoll < currentMode.targetRoll) "sağa" else "sola"} çevirin"
             !faceCorrect && currentMode.requiresFaceDetection ->
                 if (detectedFace == null) "Yüzünüzü gösterin" else "Yüzünüzü ${currentMode.title} pozisyonuna getirin"
             else -> "Mükemmel! Sabit tutun..."
         })
 
-
-
         // Ses geri bildirimi
         if (isPositionCorrect) {
             playHighBeep()
-            // Otomatik çekim başlat
             if (!isCapturing && countDownTimer == null) {
                 startAutoCapture()
             }
-        }
-            else {
+        } else {
             playLowBeep()
-            }
+        }
     }
 
     private fun checkFaceAngle(targetAngle: Float?): Boolean {
@@ -354,8 +378,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         runOnUiThread {
             binding.countdownContainer.visibility = View.VISIBLE
 
-            // Titreşim efekti
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
             } else {
                 @Suppress("DEPRECATION")
@@ -368,8 +391,6 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
                 val secondsRemaining = (millisUntilFinished / 1000).toInt() + 1
                 runOnUiThread {
                     binding.countdownContainer.text = secondsRemaining.toString()
-
-                    // Her saniye ses çal
                     toneGenerator.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 100)
                 }
             }
@@ -383,10 +404,11 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
 
     private fun capturePhoto() {
         val imageCapture = imageCapture ?: return
+        val currentMode = getCurrentMode() ?: return
 
         val photoFile = File(
             externalMediaDirs.firstOrNull(),
-            "${getCurrentMode().id}_${System.currentTimeMillis()}.jpg"
+            "${currentMode.id}_${System.currentTimeMillis()}.jpg"
         )
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
@@ -397,31 +419,19 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
-                    Toast.makeText(this@CameraCaptureActivity,
-                        "Fotoğraf çekilemedi: ${exc.message}",
-                        Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@CameraCaptureActivity, "Fotoğraf çekilemedi: ${exc.message}", Toast.LENGTH_SHORT).show()
                     isCapturing = false
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    capturedPhotos[getCurrentMode()] = photoFile
+                    capturedPhotos[currentMode] = photoFile
 
                     runOnUiThread {
-                        // Başarılı çekim sesi
                         toneGenerator.startTone(ToneGenerator.TONE_PROP_ACK, 200)
-
-                        // Titreşim
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                            vibrator.vibrate(VibrationEffect.createWaveform(
-                                longArrayOf(0, 100, 50, 100), -1
-                            ))
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 100, 50, 100), -1))
                         }
-
-                        Toast.makeText(this@CameraCaptureActivity,
-                            "${getCurrentMode().title} fotoğrafı çekildi!",
-                            Toast.LENGTH_SHORT).show()
-
-                        // Sonraki moda geç
+                        Toast.makeText(this@CameraCaptureActivity, "${currentMode.title} fotoğrafı çekildi!", Toast.LENGTH_SHORT).show()
                         moveToNextMode()
                     }
 
@@ -430,7 +440,6 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
             }
         )
 
-        // Countdown'u temizle
         runOnUiThread {
             binding.countdownContainer.visibility = View.GONE
         }
@@ -444,19 +453,16 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         currentModeIndex++
 
         if (currentModeIndex >= CaptureModes.getAllModes().size) {
-            // Tüm modlar tamamlandı
             finishCapture()
         } else {
-            // Yeni mod için kamerayı yeniden başlat
             updateUI()
             bindCameraUseCases()
         }
     }
 
     private fun updateUI() {
-        val currentMode = getCurrentMode()
+        val currentMode = getCurrentMode() ?: return
 
-        // Progress indicators
         val progressViews = listOf(
             binding.progress1, binding.progress2, binding.progress3,
             binding.progress4, binding.progress5
@@ -473,11 +479,9 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
             })
         }
 
-        // Mode bilgileri
         binding.tvModeTitle.text = currentMode.title
         binding.tvModeInstruction.text = currentMode.instruction
 
-        // Guide silhouette
         binding.guideSilhouette.setImageResource(
             when (currentMode.id) {
                 1, 2, 3 -> R.drawable.guide_face
@@ -489,26 +493,24 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
     }
 
     private fun finishCapture() {
+        isFinished = true
         if (capturedPhotos.isEmpty()) {
             Toast.makeText(this, "Hiç fotoğraf çekilmedi!", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
-        // Firebase'e yükle
         uploadPhotosToFirebase()
     }
 
-    // CameraCaptureActivity.kt içinde uploadPhotosToFirebase fonksiyonunu güncelle:
-
     private fun uploadPhotosToFirebase() {
-        // Auth kontrolü
-        if (FirebaseAuth.getInstance().currentUser == null) {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
             Toast.makeText(this, "Lütfen önce giriş yapın!", Toast.LENGTH_LONG).show()
-            // Login sayfasına yönlendir
             finish()
             return
         }
+        Log.d(TAG, "Attempting to upload photos for user: ${user.uid}")
 
         lifecycleScope.launch {
             try {
@@ -519,7 +521,6 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
                     photosMap[mode.id] = file
                 }
 
-                var uploadedCount = 0
                 firebaseUploadManager.uploadAllPhotos(
                     photos = photosMap,
                     onProgress = { current, total ->
@@ -537,7 +538,6 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
                     Toast.LENGTH_LONG
                 ).show()
 
-                // Dashboard'a geri dön
                 val resultIntent = Intent()
                 resultIntent.putExtra("upload_success", true)
                 setResult(RESULT_OK, resultIntent)
@@ -560,10 +560,10 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         }
     }
 
-    private var progressDialog: android.app.ProgressDialog? = null
+    private var progressDialog: ProgressDialog? = null
 
     private fun showProgressDialog(message: String) {
-        progressDialog = android.app.ProgressDialog.show(this, "", message, true)
+        progressDialog = ProgressDialog.show(this, "", message, true)
     }
 
     private fun hideProgressDialog() {
@@ -584,14 +584,11 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
             if (allPermissionsGranted()) {
                 startCamera()
             } else {
-                Toast.makeText(this,
-                    "Kamera izni gereklidir.",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Kamera izni gereklidir.", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
