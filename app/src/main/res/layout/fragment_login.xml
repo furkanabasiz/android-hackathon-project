@@ -53,29 +53,6 @@
         android:padding="15dp">
 
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="2dp"
-            android:text="Danışman mısınız?"
-            android:textSize="16sp"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="@+id/consultantLoginButton"
-            app:layout_constraintTop_toTopOf="@+id/textView2" />
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginStart="2dp"
-            android:layout_marginBottom="12dp"
-            android:text="Henüz hesabın yok mu?"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/registerFragmentButton"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="@+id/registerFragmentButton" />
-
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="221dp"
@@ -153,34 +130,6 @@
             app:layout_constraintEnd_toEndOf="@+id/passwordLayout"
             app:layout_constraintStart_toStartOf="@+id/passwordLayout"
             app:layout_constraintTop_toBottomOf="@+id/passwordLayout" />
-
-        <Button
-            android:id="@+id/registerFragmentButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:backgroundTint="@color/secondary"
-            android:text="Kayıt Ol"
-            android:textSize="16sp"
-            app:cornerRadius="13dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/consultantLoginButton"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/consultantLoginButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:backgroundTint="@color/secondary"
-            android:text="Danışman Girişi"
-            android:textSize="16sp"
-            app:cornerRadius="13dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/registerFragmentButton"
-            app:layout_constraintTop_toTopOf="@+id/registerFragmentButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -2,4 +2,7 @@
     <string name="app_name">Smile Hair Clinic</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="appointment_created">Randevu oluşturuldu.</string>
+    <string name="select_date_time_prompt">Lütfen bir tarih ve saat seçin.</string>
+    <string name="selected_appointment_format">Seçilen Randevu: %1$d/%2$d/%3$d %4$d:%5$d</string>
 </resources>

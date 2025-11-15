@@ -72,7 +72,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:hint="Danışman Kodu"
+        android:hint="Danışman E-posta"
         app:boxBackgroundMode="outline"
         app:boxStrokeColor="#BDBDBD"
         app:boxStrokeWidth="1dp"
@@ -85,7 +85,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextConsultantCode"
+            android:id="@+id/editTextConsultantMail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -121,7 +121,8 @@
 
     <!-- Oturum Aç Butonu -->
     <Button
-        android:id="@+id/button"
+        android:id="@+id/consultantLogButton"
+        android:backgroundTint="@color/secondary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"

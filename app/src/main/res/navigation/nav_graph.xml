@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/registerFragment">
 
     <fragment
         android:id="@+id/registerFragment"
@@ -12,20 +12,23 @@
         <action
             android:id="@+id/action_registerFragment_to_customerDashboardFragment"
             app:destination="@id/customerDashboardFragment" />
+        <action
+            android:id="@+id/action_registerFragment_to_loginConsultantFragment"
+            app:destination="@id/loginConsultantFragment" />
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.hackathon.smilehairclinic.ui.auth.LoginFragment"
         android:label="LoginFragment" >
         <action
-            android:id="@+id/action_loginFragment_to_customerDashboardFragment"
-            app:destination="@id/customerDashboardFragment" />
-        <action
-            android:id="@+id/action_loginFragment_to_loginConsultantFragment"
-            app:destination="@id/loginConsultantFragment" />
-        <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_customerDashboardFragment"
+            app:destination="@id/customerDashboardFragment" />
     </fragment>
     <fragment
         android:id="@+id/customerDashboardFragment"
@@ -33,14 +36,14 @@
         android:label="fragment_customer_dashboard"
         tools:layout="@layout/fragment_customer_dashboard" >
         <action
-            android:id="@+id/action_customerDashboardFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
-        <action
             android:id="@+id/action_customerDashboardFragment_to_cameraCaptureActivity"
             app:destination="@id/cameraCaptureActivity" />
         <action
             android:id="@+id/action_customerDashboardFragment_to_placeholder2"
             app:destination="@id/placeholder2" />
+        <action
+            android:id="@+id/action_customerDashboardFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/consultantDashboardFragment"
@@ -63,8 +66,8 @@
             android:id="@+id/action_loginConsultantFragment_to_consultantDashboardFragment"
             app:destination="@id/consultantDashboardFragment" />
         <action
-            android:id="@+id/action_loginConsultantFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
+            android:id="@+id/action_loginConsultantFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
     </fragment>
     <activity
         android:id="@+id/cameraCaptureActivity"

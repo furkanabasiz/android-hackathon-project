@@ -37,8 +37,6 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.loginButton.setOnClickListener { login(it) }
-        binding.registerFragmentButton.setOnClickListener { goRegister() }
-        binding.consultantLoginButton.setOnClickListener { goConsLogin() }
 
         val currentUser = auth.currentUser
         if (currentUser != null) {
@@ -71,16 +69,6 @@ class LoginFragment : Fragment() {
             val action = LoginFragmentDirections.actionLoginFragmentToCustomerDashboardFragment()
             findNavController().navigate(action)
         }
-    }
-
-    fun goRegister(){
-        val action = LoginFragmentDirections.actionLoginFragmentToRegisterFragment()
-        findNavController().navigate(action)
-    }
-
-    fun goConsLogin(){
-        val action = LoginFragmentDirections.actionLoginFragmentToLoginConsultantFragment()
-        findNavController().navigate(action)
     }
 
     override fun onDestroyView() {

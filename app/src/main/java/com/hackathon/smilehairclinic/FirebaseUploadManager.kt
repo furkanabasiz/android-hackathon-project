@@ -19,13 +19,19 @@ class FirebaseUploadManager {
         val currentUser = auth.currentUser
         require(currentUser != null) { "User not logged in" }
 
+        // Patient name is retrieved from the user's display name.
+        // Ensure that the displayName is set correctly during user registration/profile update.
+        val patientName = currentUser.displayName
+        require(!patientName.isNullOrEmpty()) { "Patient name (displayName) could not be determined." }
+
         val downloadUrls = mutableMapOf<Int, String>()
         val totalPhotos = photos.size
         var uploadedCount = 0
 
         photos.forEach { (modeId, file) ->
+            // The storage path is corrected to match the download logic expected by the consultant.
             val storageRef = storage.reference
-                .child("uploads/${currentUser.uid}/session_${System.currentTimeMillis()}/photo_$modeId.jpg")
+                .child("patient_submissions/$patientName/photo_$modeId.jpg")
 
             val downloadUrl = uploadFile(storageRef, file)
             downloadUrls[modeId] = downloadUrl
