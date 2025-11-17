@@ -1,62 +1,84 @@
 package com.hackathon.smilehairclinic.ui.customer
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.google.firebase.Firebase
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.hackathon.smilehairclinic.R
 import com.hackathon.smilehairclinic.databinding.FragmentCustomerDashboardBinding
+import com.hackathon.smilehairclinic.ui.AppointmentsAdapter
+import com.hackathon.smilehairclinic.ui.AppointmentsViewModel
 
 class CustomerDashboardFragment : Fragment() {
 
     private var _binding: FragmentCustomerDashboardBinding? = null
     private val binding get() = _binding!!
-    private lateinit var auth: FirebaseAuth
-    private lateinit var firestore: FirebaseFirestore
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        auth = Firebase.auth
-        firestore = FirebaseFirestore.getInstance()
-    }
+    private val appointmentsViewModel: AppointmentsViewModel by viewModels()
+    private lateinit var appointmentsAdapter: AppointmentsAdapter
+    private val auth = FirebaseAuth.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentCustomerDashboardBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            val docRef = firestore.collection("users").document(currentUser.uid)
-            docRef.get().addOnSuccessListener { document ->
-                if (document != null) {
-                    val name = document.getString("name")
-                    binding.userNameText.text = "Merhaba, $name"
-                }
-            }
+        setupUserInfo()
+        setupRecyclerView()
+        observeViewModel()
+
+        appointmentsViewModel.fetchAllAppointments()
+
+        binding.cameraButton.setOnClickListener {
+            findNavController().navigate(R.id.action_customerDashboardFragment_to_cameraCaptureActivity)
         }
-        binding.userNameText.setOnClickListener { logout(it) }
-        binding.cameraButton.setOnClickListener { findNavController().navigate(
-            CustomerDashboardFragmentDirections.actionCustomerDashboardFragmentToCameraCaptureActivity()) }
+        binding.imageView2.setOnClickListener {
+            logout()
+        }
     }
 
-    fun logout(view: View){
+    private fun setupUserInfo() {
+        val currentUser = auth.currentUser
+        binding.userNameText.text = currentUser?.displayName ?: "Misafir"
+    }
+
+    private fun setupRecyclerView() {
+        appointmentsAdapter = AppointmentsAdapter()
+        binding.recyclerViewAppointments.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = appointmentsAdapter
+        }
+    }
+
+    private fun observeViewModel() {
+        val currentUserName = auth.currentUser?.displayName
+
+        appointmentsViewModel.appointments.observe(viewLifecycleOwner) { appointments ->
+            // Filter appointments to show only the current user's appointments
+            val myAppointments = appointments.filter { it.patientName == currentUserName }
+            appointmentsAdapter.submitList(myAppointments)
+        }
+
+        appointmentsViewModel.error.observe(viewLifecycleOwner) { errorMsg ->
+            Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    fun logout() {
         auth.signOut()
-        val action = CustomerDashboardFragmentDirections.actionCustomerDashboardFragmentToLoginFragment()
+        val action = CustomerDashboardFragmentDirections.actionCustomerDashboardFragmentToRegisterFragment()
         findNavController().navigate(action)
     }
 

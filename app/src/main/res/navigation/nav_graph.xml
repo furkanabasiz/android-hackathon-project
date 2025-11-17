@@ -44,6 +44,9 @@
         <action
             android:id="@+id/action_customerDashboardFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_customerDashboardFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
     </fragment>
     <fragment
         android:id="@+id/consultantDashboardFragment"
@@ -56,6 +59,9 @@
         <action
             android:id="@+id/action_consultantDashboardFragment_to_examineSubmissionFragment"
             app:destination="@id/examineSubmissionFragment" />
+        <action
+            android:id="@+id/action_consultantDashboardFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginConsultantFragment"
