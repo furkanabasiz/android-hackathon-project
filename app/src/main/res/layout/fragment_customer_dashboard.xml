@@ -46,7 +46,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_weight="1"
-            android:src="@drawable/round_notifications" />
+            android:src="@drawable/round_logout_24" />
 
     </LinearLayout>
 

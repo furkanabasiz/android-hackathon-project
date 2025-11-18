@@ -45,7 +45,7 @@ class CustomerDashboardFragment : Fragment() {
             val action = CustomerDashboardFragmentDirections.actionCustomerDashboardFragmentToTutorialFragment()
             findNavController().navigate(action)
         }
-        binding.imageView2.setOnClickListener {
+        binding.imageView3.setOnClickListener {
             logout()
         }
     }
