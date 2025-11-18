@@ -29,7 +29,8 @@
         android:layout_margin="16dp"
         android:gravity="center"
         android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-        android:textSize="18sp"
+        android:textSize="19sp"
+        android:fontFamily="@font/poppins_semibold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline"
@@ -38,7 +39,7 @@
     <Button
         android:id="@+id/backButton"
         style="@style/Widget.TransparentBorderButton"
-        android:layout_width="150dp"
+        android:layout_width="120dp"
         android:layout_height="61dp"
         android:layout_marginStart="16dp"
         android:background="@drawable/button_border"
@@ -52,15 +53,15 @@
 
     <Button
         android:id="@+id/nextButton"
-        android:layout_width="200dp"
+        android:layout_width="180dp"
         android:layout_height="70dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        app:cornerRadius="13dp"
-        android:text="İLERİ"
-        android:fontFamily="@font/poppins"
-        android:textSize="18sp"
         android:backgroundTint="@color/secondary"
+        android:fontFamily="@font/poppins"
+        android:text="İLERİ"
+        android:textSize="18sp"
+        app:cornerRadius="13dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

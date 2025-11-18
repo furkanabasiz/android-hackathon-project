@@ -18,6 +18,7 @@ import android.os.Vibrator
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.OptIn
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
@@ -30,12 +31,11 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
-import com.hackathon.smilehairclinic.utils.FirebaseUploadManager
 import com.hackathon.smilehairclinic.R
 import com.hackathon.smilehairclinic.databinding.ActivityCameraCaptureBinding
 import com.hackathon.smilehairclinic.model.CaptureMode
 import com.hackathon.smilehairclinic.model.CaptureModes
-import com.hackathon.smilehairclinic.ui.customview.FaceOverlayView
+import com.hackathon.smilehairclinic.utils.FirebaseUploadManager
 import com.hackathon.smilehairclinic.utils.NetworkUtils
 import kotlinx.coroutines.launch
 import java.io.File
@@ -58,6 +58,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
     private val faceDetector by lazy {
         val options = FaceDetectorOptions.Builder()
             .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
+            .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
             .build()
         FaceDetection.getClient(options)
     }
@@ -145,6 +146,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         }, ContextCompat.getMainExecutor(this))
     }
 
+    @OptIn(ExperimentalGetImage::class)
     private fun bindCameraUseCases(cameraProvider: ProcessCameraProvider) {
         val currentMode = getCurrentMode() ?: return
 
@@ -169,7 +171,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         }
     }
 
-    @ExperimentalGetImage
+    @OptIn(ExperimentalGetImage::class)
     private fun processImageForFaceDetection(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image ?: run { imageProxy.close(); return }
         val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
@@ -195,66 +197,89 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         }
     }
 
-//    private fun updateAngleDisplay() {
-//        val currentMode = getCurrentMode() ?: return
-//        binding.tvPitchAngle.text = "${currentPitch.toInt()}°"
-//        val pitchCorrect = abs(currentPitch - currentMode.targetPitch) <= currentMode.toleranceDegrees
-//        binding.ivPitchStatus.setColorFilter(if (pitchCorrect) ContextCompat.getColor(this, R.color.green) else ContextCompat.getColor(this, R.color.red))
-//    }
-
     private fun checkPositionAndAutoCapture() {
         if (isCapturing) return // Do not check or play sounds during countdown/capture
         val currentMode = getCurrentMode() ?: return
-        
-        val deviation = abs(currentPitch - currentMode.targetPitch)
-        val tolerance = currentMode.toleranceDegrees
-        val faceCorrect = !currentMode.requiresFaceDetection || (detectedFace != null)
-        
-        playProximityBeep(deviation, tolerance, faceCorrect) // Play audio feedback based on proximity
 
-        val isNowCorrect = deviation <= tolerance && faceCorrect
+        val pitchDeviation = abs(currentPitch - currentMode.targetPitch)
+        val pitchTolerance = currentMode.toleranceDegrees
+        val isPitchCorrect = pitchDeviation <= pitchTolerance
+
+        var isFaceConditionMet = false
+        var feedbackMessage = "Yüzünüzü kameraya gösterin" // Default message if face is needed but not found
+
+        if (!currentMode.requiresFaceDetection) {
+            isFaceConditionMet = true
+        } else {
+            val face = detectedFace
+            if (face != null) {
+                if (currentMode.id == 2 || currentMode.id == 3) {
+                    val yaw = face.headEulerAngleY
+                    val targetAngle = if (currentMode.id == 2) -45f else 45f // Mode 2: Right (-45), Mode 3: Left (+45)
+                    val angleTolerance = 15f
+
+                    if (abs(yaw - targetAngle) <= angleTolerance) {
+                        isFaceConditionMet = true
+                    } else {
+                        isFaceConditionMet = false
+                        if (currentMode.id == 2) { // Turning Right
+                            feedbackMessage = if (yaw > targetAngle) "Yüzünüzü biraz daha sağa çevirin" else "Yüzünüzü biraz daha sola çevirin"
+                        } else { // Turning Left
+                            feedbackMessage = if (yaw < targetAngle) "Yüzünüzü biraz daha sola çevirin" else "Yüzünüzü biraz daha sağa çevirin"
+                        }
+                    }
+                } else {
+                    isFaceConditionMet = true
+                }
+            }
+        }
+
+        val canPlayPitchBeeps = !currentMode.requiresFaceDetection || detectedFace != null
+        playProximityBeep(pitchDeviation, pitchTolerance, canPlayPitchBeeps)
+
+        val isNowCorrect = isPitchCorrect && isFaceConditionMet
 
         if (isNowCorrect && !isPositionCorrect) {
-            // Position has just become correct
             manualCaptureButtonTimer?.cancel()
             binding.btnManualCapture.visibility = View.GONE
             startAutoCapture()
         } else if (!isNowCorrect && isPositionCorrect) {
-            // Position has just become incorrect
             autoCaptureTimer?.cancel()
             autoCaptureTimer = null
             startManualCaptureTimer()
         }
-        
+
         isPositionCorrect = isNowCorrect
 
         updateFeedback(when {
-            deviation > tolerance -> "Telefonu ${if (currentPitch < currentMode.targetPitch) "yukarı kaldırın" else "aşağı indirin"}"
-            !faceCorrect -> "Yüzünüzü kameraya gösterin"
+            !isPitchCorrect -> "Telefonu ${if (currentPitch < currentMode.targetPitch) "yukarı kaldırın" else "aşağı indirin"}"
+            !isFaceConditionMet -> feedbackMessage
             else -> "Mükemmel! Sabit tutun..."
         })
     }
 
-    private fun playProximityBeep(deviation: Float, tolerance: Float, faceCorrect: Boolean) {
+    private fun playProximityBeep(deviation: Float, tolerance: Float, canPlayBeeps: Boolean) {
         val currentTime = System.currentTimeMillis()
         val tone: Int
         val interval: Long
 
+        if (!canPlayBeeps) {
+            toneGenerator.stopTone()
+            return
+        }
+
         when {
-            // Correct position
-            deviation <= tolerance * 1.5 && faceCorrect -> {
+            deviation <= tolerance * 1.5 -> {
                 tone = ToneGenerator.TONE_PROP_BEEP2
-                interval = 250L // Fastest beep
+                interval = 250L
             }
-            // Near position
-            deviation <= tolerance * 3 && faceCorrect -> {
+            deviation <= tolerance * 3 -> {
                 tone = ToneGenerator.TONE_PROP_PROMPT
-                interval = 500L // Medium beep
+                interval = 500L
             }
-            // Far position
             else -> {
                 tone = ToneGenerator.TONE_PROP_BEEP
-                interval = 1000L // Slowest beep
+                interval = 1000L
             }
         }
 
@@ -281,7 +306,6 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         runOnUiThread {
             binding.countdownContainer.visibility = View.VISIBLE
             vibrate(100)
-            // Stop any guiding beeps and start a continuous tone for the countdown
             toneGenerator.stopTone()
             toneGenerator.startTone(ToneGenerator.TONE_CDMA_ABBR_REORDER, 5000)
         }
@@ -316,7 +340,6 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         val photoFile = File(externalMediaDirs.firstOrNull(), "${currentMode.id}_${System.currentTimeMillis()}.jpg")
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
-        // Stop all sounds and timers
         toneGenerator.stopTone()
         autoCaptureTimer?.cancel()
         autoCaptureTimer = null
@@ -356,13 +379,12 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         binding.tvModeTitle.text = currentMode.title
         binding.tvModeInstruction.text = currentMode.instruction
 
-        // Reset UI elements for the new mode
         isPositionCorrect = false
         binding.btnManualCapture.visibility = View.GONE
         autoCaptureTimer?.cancel()
         autoCaptureTimer = null
-        toneGenerator.stopTone() // Stop any previous tone
-        startManualCaptureTimer() // Start the timer for the new mode
+        toneGenerator.stopTone()
+        startManualCaptureTimer()
     }
 
     private fun finishCapture() {
@@ -392,7 +414,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
             }
         }
     }
-	
+
     private fun showUploadErrorDialog(errorMessage: String?) {
         AlertDialog.Builder(this)
             .setTitle("Yükleme Hatası")
@@ -417,11 +439,13 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_PERMISSIONS && allPermissionsGranted()) {
-            startCamera()
-        } else {
-            Toast.makeText(this, "Kamera izni gereklidir.", Toast.LENGTH_SHORT).show()
-            finish()
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (allPermissionsGranted()) {
+                startCamera()
+            } else {
+                Toast.makeText(this, "Kamera izni gereklidir.", Toast.LENGTH_SHORT).show()
+                finish()
+            }
         }
     }
 

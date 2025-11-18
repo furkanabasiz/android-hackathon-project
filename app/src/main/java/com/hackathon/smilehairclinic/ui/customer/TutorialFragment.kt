@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.hackathon.smilehairclinic.R
 import com.hackathon.smilehairclinic.ui.customer.adapter.TutorialViewPagerAdapter
@@ -19,7 +20,9 @@ class TutorialFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_tutorial, container, false)
         viewPager = view.findViewById(R.id.viewPager)
-        val adapter = TutorialViewPagerAdapter(requireContext(), viewPager)
+        val adapter = TutorialViewPagerAdapter(viewPager) {
+            findNavController().navigate(R.id.action_tutorialFragment_to_cameraCaptureActivity)
+        }
         viewPager.adapter = adapter
         return view
     }

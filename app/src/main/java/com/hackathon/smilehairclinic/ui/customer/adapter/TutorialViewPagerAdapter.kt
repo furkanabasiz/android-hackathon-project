@@ -1,8 +1,5 @@
 package com.hackathon.smilehairclinic.ui.customer.adapter
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,25 +7,24 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.hackathon.smilehairclinic.R
-import com.hackathon.smilehairclinic.ui.customer.CameraCaptureActivity
 
 class TutorialViewPagerAdapter(
-    private val context: Context,
-    private val viewPager: androidx.viewpager2.widget.ViewPager2
+    private val viewPager: ViewPager2,
+    private val onNavigate: () -> Unit
 ) : RecyclerView.Adapter<TutorialViewPagerAdapter.ViewHolder>() {
 
-    private val titles = arrayOf("Telefonunuzu dik tutarak doğrudan kameraya bakın",
-        "Yüzünüzü hafifçe sağa çevirin",
-        "Yüzünüzü hafifçe sola çevirin",
+    private val titles = arrayOf(
+        "Telefonunuzu dik tutarak doğrudan kameraya bakın, sonra başınızı sırasıyla önce hafif sağa " +
+                "sonra da hafif sola çevirin ",
         "Karşıya bakarken telefonunuzu yukarı kaldırıp kafanızın üst bölümünü çekin",
-        "Karşıya bakarken telefonunuzu kafanızın arkasına kadar kaldırıp ense bölgenizi çekin")
+        "Karşıya bakarken telefonunuzu kafanızın arkasına kadar kaldırıp ense bölgenizi çekin"
+    )
     private val images = intArrayOf(
-        R.drawable.register_img,
-        R.drawable.register_img,
-        R.drawable.register_img,
-        R.drawable.register_img,
-        R.drawable.register_img
+        R.drawable.tutorial1,
+        R.drawable.tutorial2,
+        R.drawable.tutorial3,
     )
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -49,11 +45,7 @@ class TutorialViewPagerAdapter(
 
         if (position == titles.size - 1) {
             holder.nextButton.text = "BAŞLA"
-            holder.nextButton.setOnClickListener {
-                val intent = Intent(context, CameraCaptureActivity::class.java)
-                context.startActivity(intent)
-                (context as? Activity)?.finish()
-            }
+            holder.nextButton.setOnClickListener { onNavigate() }
         } else {
             holder.nextButton.text = "İLERİ"
             holder.nextButton.setOnClickListener {
