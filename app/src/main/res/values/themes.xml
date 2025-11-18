@@ -7,6 +7,9 @@
         <item name="colorPrimaryDark">#3700B3</item>
         <item name="colorAccent">#03DAC5</item>
     </style>
+    <style name="Widget.TransparentBorderButton" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@null</item>
+    </style>
 
     <style name="Theme.SmileHairClinic" parent="Base.Theme.SmileHairClinic" />
 </resources>

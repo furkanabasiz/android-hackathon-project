@@ -1,4 +1,4 @@
-package com.hackathon.smilehairclinic.ui
+package com.hackathon.smilehairclinic.utils
 
 import android.view.LayoutInflater
 import android.view.View

@@ -1,4 +1,4 @@
-package com.hackathon.smilehairclinic
+package com.hackathon.smilehairclinic.utils
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth

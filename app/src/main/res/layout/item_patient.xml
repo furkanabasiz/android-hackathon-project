@@ -5,12 +5,14 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
+    app:cardBackgroundColor="#243e54"
     app:cardElevation="4dp">
 
     <TextView
         android:id="@+id/textViewPatientNameItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/white"
         android:padding="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 

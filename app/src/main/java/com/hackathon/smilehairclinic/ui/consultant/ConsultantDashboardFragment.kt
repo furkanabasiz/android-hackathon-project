@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.hackathon.smilehairclinic.R
 import com.hackathon.smilehairclinic.databinding.FragmentConsultantDashboardBinding
-import com.hackathon.smilehairclinic.ui.AppointmentsAdapter
-import com.hackathon.smilehairclinic.ui.AppointmentsViewModel
+import com.hackathon.smilehairclinic.utils.AppointmentsAdapter
+import com.hackathon.smilehairclinic.viewmodel.AppointmentsViewModel
 
 class ConsultantDashboardFragment : Fragment() {
 

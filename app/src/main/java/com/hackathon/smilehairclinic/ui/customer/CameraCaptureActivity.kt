@@ -30,11 +30,12 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
-import com.hackathon.smilehairclinic.FirebaseUploadManager
+import com.hackathon.smilehairclinic.utils.FirebaseUploadManager
 import com.hackathon.smilehairclinic.R
 import com.hackathon.smilehairclinic.databinding.ActivityCameraCaptureBinding
 import com.hackathon.smilehairclinic.model.CaptureMode
 import com.hackathon.smilehairclinic.model.CaptureModes
+import com.hackathon.smilehairclinic.ui.customview.FaceOverlayView
 import com.hackathon.smilehairclinic.utils.NetworkUtils
 import kotlinx.coroutines.launch
 import java.io.File
@@ -53,16 +54,13 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
     private var imageCapture: ImageCapture? = null
     private var camera: Camera? = null
     private var imageAnalyzer: ImageAnalysis? = null
-
     private var currentPitch: Float = 0f
-
     private val faceDetector by lazy {
         val options = FaceDetectorOptions.Builder()
             .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
             .build()
         FaceDetection.getClient(options)
     }
-
     private var currentModeIndex = 0
     private val capturedPhotos = mutableMapOf<CaptureMode, File>()
     private var isCapturing = false
@@ -187,18 +185,22 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
-            currentPitch = Math.toDegrees(Math.atan2(event.values[1].toDouble(), event.values[2].toDouble())).toFloat()
-            updateAngleDisplay()
+            var pitch = Math.toDegrees(Math.atan2(event.values[2].toDouble(), event.values[1].toDouble())).toFloat()
+            val currentMode = getCurrentMode()
+            if (currentMode != null && currentMode.useFrontCamera && (currentMode.id == 4 || currentMode.id == 5)) {
+                pitch *= -1
+            }
+            currentPitch = pitch
             checkPositionAndAutoCapture()
         }
     }
 
-    private fun updateAngleDisplay() {
-        val currentMode = getCurrentMode() ?: return
-        binding.tvPitchAngle.text = "${currentPitch.toInt()}°"
-        val pitchCorrect = abs(currentPitch - currentMode.targetPitch) <= currentMode.toleranceDegrees
-        binding.ivPitchStatus.setColorFilter(if (pitchCorrect) ContextCompat.getColor(this, R.color.green) else ContextCompat.getColor(this, R.color.red))
-    }
+//    private fun updateAngleDisplay() {
+//        val currentMode = getCurrentMode() ?: return
+//        binding.tvPitchAngle.text = "${currentPitch.toInt()}°"
+//        val pitchCorrect = abs(currentPitch - currentMode.targetPitch) <= currentMode.toleranceDegrees
+//        binding.ivPitchStatus.setColorFilter(if (pitchCorrect) ContextCompat.getColor(this, R.color.green) else ContextCompat.getColor(this, R.color.red))
+//    }
 
     private fun checkPositionAndAutoCapture() {
         if (isCapturing) return // Do not check or play sounds during countdown/capture

@@ -1,4 +1,4 @@
-package com.hackathon.smilehairclinic.ui
+package com.hackathon.smilehairclinic.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

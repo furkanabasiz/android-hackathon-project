@@ -12,7 +12,6 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -27,9 +26,10 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.hackathon.smilehairclinic.R
 import com.hackathon.smilehairclinic.databinding.FragmentExamineSubmissionBinding
+import com.hackathon.smilehairclinic.viewmodel.ExamineSubmissionViewModel
+import com.hackathon.smilehairclinic.viewmodel.UiState
 import java.io.OutputStream
 import java.util.Calendar
-import java.util.Date
 
 class ExamineSubmissionFragment : Fragment() {
 

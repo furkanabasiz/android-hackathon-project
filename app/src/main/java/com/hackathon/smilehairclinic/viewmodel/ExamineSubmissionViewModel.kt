@@ -1,6 +1,5 @@
-package com.hackathon.smilehairclinic.ui.consultant
+package com.hackathon.smilehairclinic.viewmodel
 
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

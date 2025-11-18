@@ -1,8 +1,14 @@
-package com.hackathon.smilehairclinic.utils
+package com.hackathon.smilehairclinic.ui.customview
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
@@ -53,7 +59,7 @@ class FaceOverlayView @JvmOverloads constructor(
 
         // Animate from the current drawing progress to the new progress
         progressAnimator = ValueAnimator.ofFloat(currentDrawProgress, newProgress).apply {
-            duration = 500 // Animation duration in milliseconds
+            duration = 1000 // Animation duration in milliseconds
             interpolator = DecelerateInterpolator() // Makes the animation start fast and slow down
 
             addUpdateListener { animator ->
