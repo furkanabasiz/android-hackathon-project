@@ -5,4 +5,26 @@
     <string name="appointment_created">Randevu oluşturuldu.</string>
     <string name="select_date_time_prompt">Lütfen bir tarih ve saat seçin.</string>
     <string name="selected_appointment_format">Seçilen Randevu: %1$d/%2$d/%3$d %4$d:%5$d</string>
+    <string name="no_internet_connection">İnternet Bağlantısı Yok</string>
+    <string name="internet_connection_required_for_upload">Fotoğraf yüklemek için internet bağlantısı gereklidir.</string>
+    <string name="ok">Tamam</string>
+    <string name="use_case_binding_failed">Use case binding failed</string>
+    <string name="face_detection_failed">Face detection failed</string>
+    <string name="show_your_face_to_camera">Yüzünüzü kameraya gösterin</string>
+    <string name="turn_your_face_a_little_more_to_the_right">Yüzünüzü biraz daha sağa çevirin</string>
+    <string name="turn_your_face_a_little_more_to_the_left">Yüzünüzü biraz daha sola çevirin</string>
+    <string name="move_phone_direction">Telefonu %1$s</string>
+    <string name="move_up">yukarı kaldırın</string>
+    <string name="move_down">aşağı indirin</string>
+    <string name="perfect_hold_still">Mükemmel! Sabit tutun...</string>
+    <string name="photo_capture_failed">Photo capture failed: %1$s</string>
+    <string name="photo_captured">%1$s fotoğrafı çekildi!</string>
+    <string name="uploading_photos">Fotoğraflar yükleniyor...</string>
+    <string name="uploading_progress">Yükleniyor... (%1$d/%2$d)</string>
+    <string name="all_photos_uploaded_successfully">Tüm fotoğraflar başarıyla yüklendi!</string>
+    <string name="upload_error">Yükleme Hatası</string>
+    <string name="photos_could_not_be_uploaded">Fotoğraflar yüklenemedi: %1$s</string>
+    <string name="try_again">Tekrar Dene</string>
+    <string name="cancel">İptal</string>
+    <string name="camera_permission_required">Kamera izni gereklidir.</string>
 </resources>

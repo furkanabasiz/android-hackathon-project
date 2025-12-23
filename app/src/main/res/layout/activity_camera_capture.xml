@@ -96,17 +96,17 @@
 
         <Button
             android:id="@+id/btnManualCapture"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
             android:text="Manuel Fotoğraf Çek"
             android:textColor="@color/white"
             android:textSize="20sp"
-            android:fontFamily="@font/poppins"
-            android:layout_width="350dp"
-            app:cornerRadius="15dp"
-            android:layout_height="wrap_content"
             android:visibility="gone"
             app:backgroundTint="@color/secondaryButton"
+            app:cornerRadius="15dp"
             app:elevation="4dp"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
 
     </LinearLayout>
 

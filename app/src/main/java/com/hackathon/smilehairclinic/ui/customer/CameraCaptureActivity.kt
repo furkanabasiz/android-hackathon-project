@@ -66,7 +66,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
     private val capturedPhotos = mutableMapOf<CaptureMode, File>()
     private var isCapturing = false
     private var isFinished = false
-    
+
     // Timers
     private var autoCaptureTimer: CountDownTimer? = null
     private var manualCaptureButtonTimer: CountDownTimer? = null
@@ -105,9 +105,9 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
 
     private fun showNoInternetDialog() {
         AlertDialog.Builder(this)
-            .setTitle("İnternet Bağlantısı Yok")
-            .setMessage("Fotoğraf yüklemek için internet bağlantısı gereklidir.")
-            .setPositiveButton("Tamam") { _, _ -> finish() }
+            .setTitle(getString(R.string.no_internet_connection))
+            .setMessage(getString(R.string.internet_connection_required_for_upload))
+            .setPositiveButton(getString(R.string.ok)) { _, _ -> finish() }
             .setCancelable(false)
             .show()
     }
@@ -167,7 +167,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
             cameraProvider.unbindAll()
             camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture, imageAnalyzer)
         } catch (e: Exception) {
-            Log.e(TAG, "Use case binding failed", e)
+            Log.e(TAG, getString(R.string.use_case_binding_failed), e)
         }
     }
 
@@ -181,7 +181,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
                 detectedFace = faces.firstOrNull()
                 checkPositionAndAutoCapture()
             }
-            .addOnFailureListener { e -> Log.e(TAG, "Face detection failed", e) }
+            .addOnFailureListener { e -> Log.e(TAG, getString(R.string.face_detection_failed), e) }
             .addOnCompleteListener { imageProxy.close() }
     }
 
@@ -206,7 +206,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         val isPitchCorrect = pitchDeviation <= pitchTolerance
 
         var isFaceConditionMet = false
-        var feedbackMessage = "Yüzünüzü kameraya gösterin" // Default message if face is needed but not found
+        var feedbackMessage = getString(R.string.show_your_face_to_camera) // Default message if face is needed but not found
 
         if (!currentMode.requiresFaceDetection) {
             isFaceConditionMet = true
@@ -223,9 +223,9 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
                     } else {
                         isFaceConditionMet = false
                         if (currentMode.id == 2) { // Turning Right
-                            feedbackMessage = if (yaw > targetAngle) "Yüzünüzü biraz daha sağa çevirin" else "Yüzünüzü biraz daha sola çevirin"
+                            feedbackMessage = if (yaw > targetAngle) getString(R.string.turn_your_face_a_little_more_to_the_right) else getString(R.string.turn_your_face_a_little_more_to_the_left)
                         } else { // Turning Left
-                            feedbackMessage = if (yaw < targetAngle) "Yüzünüzü biraz daha sola çevirin" else "Yüzünüzü biraz daha sağa çevirin"
+                            feedbackMessage = if (yaw < targetAngle) getString(R.string.turn_your_face_a_little_more_to_the_left) else getString(R.string.turn_your_face_a_little_more_to_the_right)
                         }
                     }
                 } else {
@@ -252,9 +252,9 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
         isPositionCorrect = isNowCorrect
 
         updateFeedback(when {
-            !isPitchCorrect -> "Telefonu ${if (currentPitch < currentMode.targetPitch) "yukarı kaldırın" else "aşağı indirin"}"
+            !isPitchCorrect -> getString(R.string.move_phone_direction, if (currentPitch < currentMode.targetPitch) getString(R.string.move_up) else getString(R.string.move_down))
             !isFaceConditionMet -> feedbackMessage
-            else -> "Mükemmel! Sabit tutun..."
+            else -> getString(R.string.perfect_hold_still)
         })
     }
 
@@ -348,14 +348,14 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
 
         imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(this), object : ImageCapture.OnImageSavedCallback {
             override fun onError(exc: ImageCaptureException) {
-                Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                Log.e(TAG, getString(R.string.photo_capture_failed, exc.message), exc)
                 isCapturing = false
             }
 
             override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                 capturedPhotos[currentMode] = photoFile
                 vibrate(100, 50, 100)
-                Toast.makeText(this@CameraCaptureActivity, "${currentMode.title} fotoğrafı çekildi!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@CameraCaptureActivity, getString(R.string.photo_captured, currentMode.title), Toast.LENGTH_SHORT).show()
                 moveToNextMode()
                 isCapturing = false
             }
@@ -398,14 +398,14 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
 
     private fun uploadPhotosToFirebase() {
         lifecycleScope.launch {
-            val progressDialog = ProgressDialog.show(this@CameraCaptureActivity, "", "Fotoğraflar yükleniyor...", true)
+            val progressDialog = ProgressDialog.show(this@CameraCaptureActivity, "", getString(R.string.uploading_photos), true)
             try {
                 val photosMap = capturedPhotos.mapKeys { it.key.id }
                 firebaseUploadManager.uploadAllPhotos(photosMap) { current, total ->
-                    progressDialog.setMessage("Yükleniyor... ($current/$total)")
+                    progressDialog.setMessage(getString(R.string.uploading_progress, current, total))
                 }
                 progressDialog.dismiss()
-                Toast.makeText(this@CameraCaptureActivity, "Tüm fotoğraflar başarıyla yüklendi!", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@CameraCaptureActivity, getString(R.string.all_photos_uploaded_successfully), Toast.LENGTH_LONG).show()
                 setResult(RESULT_OK, Intent().putExtra("upload_success", true))
                 finish()
             } catch (e: Exception) {
@@ -417,10 +417,10 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
 
     private fun showUploadErrorDialog(errorMessage: String?) {
         AlertDialog.Builder(this)
-            .setTitle("Yükleme Hatası")
-            .setMessage("Fotoğraflar yüklenemedi: $errorMessage")
-            .setPositiveButton("Tekrar Dene") { _, _ -> uploadPhotosToFirebase() }
-            .setNegativeButton("İptal") { _, _ -> finish() }
+            .setTitle(getString(R.string.upload_error))
+            .setMessage(getString(R.string.photos_could_not_be_uploaded, errorMessage))
+            .setPositiveButton(getString(R.string.try_again)) { _, _ -> uploadPhotosToFirebase() }
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> finish() }
             .show()
     }
 
@@ -443,7 +443,7 @@ class CameraCaptureActivity : AppCompatActivity(), SensorEventListener {
             if (allPermissionsGranted()) {
                 startCamera()
             } else {
-                Toast.makeText(this, "Kamera izni gereklidir.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.camera_permission_required), Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
